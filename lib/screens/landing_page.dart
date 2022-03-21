@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tflite_audio/tflite_audio.dart';
 
@@ -23,13 +20,8 @@ class _LandingPageState extends State<LandingPage> {
   bool livePlaying = false;
   final bool outputRawScores = false;
   final int numOfInferences = 5;
-  final int numThreads = 1;
   final bool isAsset = true;
-  final double detectionThreshold = 0.3;
-  final int averageWindowDuration = 1000;
-  final int minimumTimeBetweenSamples = 30;
-  final int suppressionTime = 1500;
-  String emotion = 'Background';
+  String emotion = 'Background Noise';
 
   @override
   void initState() {
@@ -48,7 +40,6 @@ class _LandingPageState extends State<LandingPage> {
       bufferSize: bufferSize,
       numOfInferences: numOfInferences,
     );
-
     result?.listen((event) {
       setState(() {
         emotion = event["recognitionResult"].toString();
@@ -57,20 +48,6 @@ class _LandingPageState extends State<LandingPage> {
       debugPrint(
           "Recognition Result: " + event["recognitionResult"].toString());
     }).onDone(() => isRecording.value = false);
-  }
-
-  Future<List<String>> fetchLabelList() async {
-    List<String> _labelList = [];
-    await rootBundle.loadString(label).then((q) {
-      for (String i in const LineSplitter().convert(q)) {
-        _labelList.add(i);
-      }
-    });
-    return _labelList;
-  }
-
-  String showResult(AsyncSnapshot snapshot, String key) {
-    return snapshot.hasData ? snapshot.data[key].toString() : 'null';
   }
 
   Widget inferenceTimeWidget(String result) {
